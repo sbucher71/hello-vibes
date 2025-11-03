@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "hello-vibes",
+    "name": "Hello Vibes",
     "slug": "hello-vibes",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,8 +12,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
+    "scheme": "hellovibes",
+    "ios": { "bundleIdentifier": "com.obrc.hellovibes", "buildNumber": "1.0.0" }
     },
     "android": {
       "adaptiveIcon": {
