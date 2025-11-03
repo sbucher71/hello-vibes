@@ -7,17 +7,24 @@
 // - Use TypeScript, React Native Animated, and expo-linear-gradient. Keep it <100 lines.
 
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, Animated, Platform } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Animated, Platform, View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
+import Confetti from 'react-confetti';
 
 export default function App() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const bounceAnim = useRef(new Animated.Value(1)).current;
   const [greeting, setGreeting] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: Platform.OS === 'web' ? window.innerWidth : Dimensions.get('window').width,
+    height: Platform.OS === 'web' ? window.innerHeight : Dimensions.get('window').height,
+  });
 
   useEffect(() => {
+    console.log('App is mounting! Platform:', Platform.OS);
     // Set greeting based on time of day
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Good morning');
@@ -39,6 +46,18 @@ export default function App() {
         }),
       ])
     ).start();
+
+    // Update window dimensions on resize (web only)
+    if (Platform.OS === 'web') {
+      const handleResize = () => {
+        setWindowDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   const handleVibeCheck = () => {
@@ -46,6 +65,10 @@ export default function App() {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
+
+    // Show confetti
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 5000); // Stop after 5 seconds
 
     // Bounce animation
     Animated.sequence([
@@ -62,6 +85,41 @@ export default function App() {
       }),
     ]).start();
   };
+
+  // Use View with CSS gradient for web, LinearGradient for native
+  if (Platform.OS === 'web') {
+    return (
+      <View style={{
+        flex: 1,
+        height: '100vh' as any,
+        width: '100vw' as any,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // @ts-ignore - CSS gradient works on web
+        background: 'linear-gradient(135deg, #14b8a6 0%, #a855f7 100%)',
+      } as any}>
+        {showConfetti && (
+          <Confetti
+            width={windowDimensions.width}
+            height={windowDimensions.height}
+            recycle={false}
+            numberOfPieces={500}
+            gravity={0.3}
+          />
+        )}
+        <Animated.Text style={[styles.hello, { transform: [{ scale: pulseAnim }] }]}>
+          Hello 👋
+        </Animated.Text>
+        <Text style={styles.subtitle}>{greeting}</Text>
+        <Animated.View style={{ transform: [{ scale: bounceAnim }] }}>
+          <TouchableOpacity style={styles.button} onPress={handleVibeCheck}>
+            <Text style={styles.buttonText}>Vibe Check</Text>
+          </TouchableOpacity>
+        </Animated.View>
+        <StatusBar style="light" />
+      </View>
+    );
+  }
 
   return (
     <LinearGradient
