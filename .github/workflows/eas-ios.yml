@@ -23,11 +23,11 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build iOS (EAS)
-        run: npx eas build --platform ios --profile production --non-interactive --wait
+        run: eas build --platform ios --profile production --non-interactive --wait
 
       - name: Create ASC API key file
-        run: |
-          echo '${{ secrets.ASC_API_KEY_JSON }}' > asc.json
+        run: echo '${{ secrets.ASC_API_KEY_JSON }}' > asc.json
 
       - name: Submit to TestFlight
-        run: npx eas submit --platform ios --latest --non-interactive --asc-api-key-path asc.json
+        run: eas submit --platform ios --latest --non-interactive --asc-api-key-path asc.json
+
