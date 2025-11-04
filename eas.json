@@ -2,10 +2,10 @@
   "cli": { "version": ">= 14.0.0", "appVersionSource": "remote" },
   "build": {
     "production": {
-      "ios": { "simulator": false },
-      "android": { "gradleCommand": ":app:bundleRelease" }
+      "ios": { "simulator": false }
     }
   },
-  "submit": { "production": { "ios": { "ascAppId": null } } }
+  "submit": {
+    "production": { "ios": {} }
+  }
 }
-
