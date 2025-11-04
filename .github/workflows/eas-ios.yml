@@ -47,6 +47,13 @@ jobs:
           which eas && eas --version
           npx --yes expo config --type public --json | jq '.owner, .extra.eas, .ios.bundleIdentifier, .ios.infoPlist'
 
+      - name: Verify Apple key is present and parseable
+        run: |
+          node -e "const j=process.env.EXPO_APP_STORE_CONNECT_API_KEY; if(!j) process.exit(1); try{const o=JSON.parse(j); if(!o.keyId||!o.issuerId||!o.key) process.exit(1);}catch(e){process.exit(1)}"
+
+      - name: Show Expo config highlights
+        run: npx --yes expo config --type public --json | jq '.owner, .extra.eas, .ios.bundleIdentifier, .ios.infoPlist'
+
       - name: Clear iOS credentials for this bundle id
         run: |
           eas credentials -p ios \
