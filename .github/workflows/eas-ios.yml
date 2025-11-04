@@ -1,15 +1,35 @@
+name: iOS Build & Submit (EAS)
+
+on:
+  workflow_dispatch: {}   # allows manual runs from the Actions tab
+  # optionally also run on pushes to main that touch app/eas files:
+  # push:
+  #   branches: [ main ]
+  #   paths:
+  #     - app.json
+  #     - app.config.ts
+  #     - eas.json
+  #     - .github/workflows/eas-ios.yml
+  #     - package.json
+  #     - package-lock.json
+  #     - yarn.lock
+  #     - pnpm-lock.yaml
+
 jobs:
   ios:
     runs-on: ubuntu-latest
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EXPO_APP_STORE_CONNECT_API_KEY: ${{ secrets.EXPO_APP_STORE_CONNECT_API_KEY }}
+      # optional: NODE_VERSION secret; defaults to 20 if unset
+      NODE_VERSION: ${{ secrets.NODE_VERSION || '20' }}
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ secrets.NODE_VERSION || '20' }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install deps
         run: |
@@ -23,7 +43,9 @@ jobs:
 
       - name: Show config (quick debug)
         run: |
-          npx --yes expo config --type public --json | jq '.ios.infoPlist, .ios.bundleIdentifier, .extra?.eas?.projectId'
+          echo "Node: $(node -v)"
+          which eas && eas --version
+          npx --yes expo config --type public --json | jq '.owner, .extra.eas, .ios.bundleIdentifier, .ios.infoPlist'
 
       - name: Build iOS (EAS)
         run: eas build --platform ios --profile production --non-interactive --wait
