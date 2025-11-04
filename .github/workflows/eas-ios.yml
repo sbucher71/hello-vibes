@@ -3,7 +3,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      EXPO_APP_STORE_CONNECT_API_KEY: ${{ secrets.ASC_API_KEY_JSON }}
+      EXPO_APP_STORE_CONNECT_API_KEY: ${{ secrets.EXPO_APP_STORE_CONNECT_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 

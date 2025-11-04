@@ -19,7 +19,8 @@
       "bundleIdentifier": "com.obrc.hellovibes",
       "buildNumber": "1.0.0",
       "infoPlist": {
-      "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.obrc.hellovibes",
