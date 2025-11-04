@@ -1,8 +1,11 @@
 {
-  "cli": { "version": ">= 14.0.0" },
+  "cli": { "version": ">= 14.0.0", "appVersionSource": "remote" },
   "build": {
     "production": {
-      "ios": { "simulator": false }
+      "ios": { "simulator": false },
+      "android": { "gradleCommand": ":app:bundleRelease" }
     }
-  }
+  },
+  "submit": { "production": { "ios": { "ascAppId": null } } }
 }
+
