@@ -2,6 +2,8 @@
   "expo": {
     "name": "Hello Vibes",
     "slug": "hello-vibes",
+    "owner": "gorgesix",
+    "extra": { "eas": { "projectId": "213ccd0b-1535-4402-9dbe-c386562074a3" } },     
     "scheme": "hellovibes",
     "version": "1.0.0",
     "orientation": "portrait",

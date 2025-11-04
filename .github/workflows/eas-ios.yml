@@ -1,10 +1,13 @@
 name: iOS Build & Submit (EAS)
 on:
-  workflow_dispatch: {}   # run manually from the Actions tab
+  workflow_dispatch: {}
 
 jobs:
   ios:
     runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}  # required
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,11 +19,18 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm i; fi
 
+      # This action installs Expo/EAS and puts `eas` on PATH
       - name: Set up Expo/EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      # (Optional) sanity check so we fail early with a clear message
+      - name: Verify EAS availability
+        run: |
+          which eas || (echo "eas not on PATH" && exit 1)
+          eas --version
 
       - name: Build iOS (EAS)
         run: eas build --platform ios --profile production --non-interactive --wait
@@ -30,4 +40,3 @@ jobs:
 
       - name: Submit to TestFlight
         run: eas submit --platform ios --latest --non-interactive --asc-api-key-path asc.json
-
