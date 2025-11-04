@@ -4,7 +4,10 @@
 node_modules/
 
 # Expo
-.expo/
+.expo
+.expo-shared
+ios
+android
 dist/
 web-build/
 expo-env.d.ts
