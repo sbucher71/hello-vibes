@@ -3,7 +3,6 @@
     "name": "Hello Vibes",
     "slug": "hello-vibes",
     "owner": "gorgesix",
-    "extra": { "eas": { "projectId": "213ccd0b-1535-4402-9dbe-c386562074a3" } },     
     "scheme": "hellovibes",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +16,6 @@
     },
     "ios": {
       "bundleIdentifier": "com.obrc.hellovibes",
-      "buildNumber": "1.0.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -31,8 +29,10 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "extra": {
+      "eas": {
+        "projectId": "213ccd0b-1535-4402-9dbe-c386562074a3"
+      }
     }
   }
 }
