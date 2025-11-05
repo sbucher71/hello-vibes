@@ -11,16 +11,29 @@ import { StyleSheet, Text, TouchableOpacity, Animated, Platform, View, Dimension
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
-import Confetti from 'react-confetti';
+
+// Only import Confetti on web
+let Confetti: any = null;
+if (Platform.OS === 'web') {
+  Confetti = require('react-confetti').default;
+}
 
 export default function App() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const bounceAnim = useRef(new Animated.Value(1)).current;
   const [greeting, setGreeting] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: Platform.OS === 'web' ? window.innerWidth : Dimensions.get('window').width,
-    height: Platform.OS === 'web' ? window.innerHeight : Dimensions.get('window').height,
+  const [showEmojiBurst, setShowEmojiBurst] = useState(false);
+  const emojiAnims = useRef([...Array(8)].map(() => new Animated.Value(0))).current;
+  const [windowDimensions, setWindowDimensions] = useState(() => {
+    if (Platform.OS === 'web') {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    }
+    const { width, height } = Dimensions.get('window');
+    return { width, height };
   });
 
   useEffect(() => {
@@ -64,11 +77,24 @@ export default function App() {
     // Trigger haptic if not on web
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      // Show emoji burst on native
+      setShowEmojiBurst(true);
+      emojiAnims.forEach((anim, i) => {
+        anim.setValue(0);
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 1000,
+          delay: i * 50,
+          useNativeDriver: true,
+        }).start();
+      });
+      setTimeout(() => setShowEmojiBurst(false), 1500);
+    } else {
+      // Show confetti on web
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
     }
-
-    // Show confetti
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 5000); // Stop after 5 seconds
 
     // Bounce animation
     Animated.sequence([
@@ -128,6 +154,45 @@ export default function App() {
       end={{ x: 1, y: 1 }}
       style={styles.container}
     >
+      {showEmojiBurst && (
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          {emojiAnims.map((anim, i) => {
+            const angle = (i / emojiAnims.length) * Math.PI * 2;
+            const distance = 150;
+            return (
+              <Animated.Text
+                key={i}
+                style={{
+                  position: 'absolute',
+                  fontSize: 40,
+                  top: '50%',
+                  left: '50%',
+                  opacity: anim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0, 1, 0],
+                  }),
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, Math.cos(angle) * distance],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, Math.sin(angle) * distance],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                {['🎉', '✨', '🎊', '⭐', '💫', '🌟', '🎈', '🎆'][i]}
+              </Animated.Text>
+            );
+          })}
+        </View>
+      )}
       <Animated.Text style={[styles.hello, { transform: [{ scale: pulseAnim }] }]}>
         Hello 👋
       </Animated.Text>
