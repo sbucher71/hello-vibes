@@ -1,6 +1,6 @@
 {
   "name": "hello-vibes",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -15,7 +15,6 @@
     "expo-linear-gradient": "^15.0.7",
     "expo-status-bar": "~3.0.8",
     "react": "^19.2.0",
-    "react-confetti": "^6.4.0",
     "react-dom": "^19.2.0",
     "react-native": "0.81.5",
     "react-native-web": "^0.21.2"
