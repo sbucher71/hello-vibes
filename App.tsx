@@ -2,15 +2,143 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
 
+// Microsoft Azure AD configuration
+const MICROSOFT_CONFIG = {
+  clientId: 'YOUR_AZURE_AD_CLIENT_ID', // Replace with your Azure AD Application (client) ID
+  tenantId: 'common', // 'common', 'organizations', 'consumers', or your specific tenant ID
+  scopes: ['openid', 'profile', 'email', 'User.Read'],
+};
+
+const discovery = {
+  authorizationEndpoint: `https://login.microsoftonline.com/${MICROSOFT_CONFIG.tenantId}/oauth2/v2.0/authorize`,
+  tokenEndpoint: `https://login.microsoftonline.com/${MICROSOFT_CONFIG.tenantId}/oauth2/v2.0/token`,
+};
+
+interface UserInfo {
+  name: string;
+  email: string;
+  provider: string;
+  id: string;
+}
+
 export default function App() {
-  const [user, setUser] = useState<{ name: string; provider: string } | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const redirectUri = makeRedirectUri({
+    scheme: 'hellovibes',
+    path: 'auth',
+  });
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: MICROSOFT_CONFIG.clientId,
+      scopes: MICROSOFT_CONFIG.scopes,
+      responseType: ResponseType.Code,
+      redirectUri,
+      usePKCE: true,
+    },
+    discovery
+  );
+
+  // Load saved user on app start
+  useEffect(() => {
+    loadSavedUser();
+  }, []);
+
+  // Handle OAuth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params;
+      exchangeCodeForToken(code);
+    } else if (response?.type === 'error') {
+      Alert.alert('Authentication Error', response.error?.message || 'Failed to authenticate');
+    }
+  }, [response]);
+
+  const loadSavedUser = async () => {
+    try {
+      const savedUser = await AsyncStorage.getItem('user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const exchangeCodeForToken = async (code: string) => {
+    try {
+      // Exchange authorization code for access token
+      const tokenResponse = await fetch(discovery.tokenEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: MICROSOFT_CONFIG.clientId,
+          scope: MICROSOFT_CONFIG.scopes.join(' '),
+          code,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+          code_verifier: request?.codeVerifier || '',
+        }).toString(),
+      });
+
+      const tokens = await tokenResponse.json();
+
+      if (tokens.access_token) {
+        // Get user info from Microsoft Graph API
+        const userInfoResponse = await fetch('https://graph.microsoft.com/v1.0/me', {
+          headers: {
+            Authorization: `Bearer ${tokens.access_token}`,
+          },
+        });
+
+        const userInfo = await userInfoResponse.json();
+
+        const userData: UserInfo = {
+          name: userInfo.displayName || userInfo.userPrincipalName,
+          email: userInfo.mail || userInfo.userPrincipalName,
+          provider: 'Microsoft',
+          id: userInfo.id,
+        };
+
+        setUser(userData);
+        await AsyncStorage.setItem('user', JSON.stringify(userData));
+        Alert.alert('Success', `Welcome, ${userData.name}!`);
+      } else {
+        throw new Error('No access token received');
+      }
+    } catch (error) {
+      console.error('Token exchange error:', error);
+      Alert.alert('Error', 'Failed to complete sign-in. Please try again.');
+    }
+  };
 
   const handleMicrosoftLogin = async () => {
-    Alert.alert('Microsoft Login', 'Microsoft OAuth integration requires Azure AD app setup. Coming soon!');
+    if (MICROSOFT_CONFIG.clientId === 'YOUR_AZURE_AD_CLIENT_ID') {
+      Alert.alert(
+        'Setup Required',
+        'Please configure your Azure AD Client ID in App.tsx.\n\n' +
+        'Steps:\n' +
+        '1. Go to portal.azure.com\n' +
+        '2. Register a new app in Azure AD\n' +
+        '3. Add redirect URI: ' + redirectUri + '\n' +
+        '4. Copy the Application (client) ID\n' +
+        '5. Replace YOUR_AZURE_AD_CLIENT_ID in the code'
+      );
+      return;
+    }
+    promptAsync();
   };
 
   const handleAppleLogin = async () => {
@@ -21,10 +149,24 @@ export default function App() {
     Alert.alert('Google Login', 'Google OAuth integration requires Firebase/Google Cloud setup. Coming soon!');
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    Alert.alert('Logged Out', 'You have been logged out successfully.');
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('user');
+      setUser(null);
+      Alert.alert('Logged Out', 'You have been logged out successfully.');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <LinearGradient colors={['#14b8a6', '#a855f7']} style={styles.container}>
+        <Text style={styles.subtitle}>Loading...</Text>
+        <StatusBar style="light" />
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
