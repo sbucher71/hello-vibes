@@ -1,6 +1,6 @@
 {
   "name": "hello-vibes",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -10,11 +10,15 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "expo": "~54.0.22",
+    "expo-auth-session": "^7.0.8",
+    "expo-crypto": "^15.0.7",
     "expo-font": "~14.0.9",
     "expo-haptics": "^15.0.7",
     "expo-linear-gradient": "^15.0.7",
     "expo-status-bar": "~3.0.8",
+    "expo-web-browser": "^15.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
