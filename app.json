@@ -4,7 +4,7 @@
     "slug": "hello-vibes",
     "owner": "gorgesix",
     "scheme": "hellovibes",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,6 +16,8 @@
     },
     "ios": {
       "bundleIdentifier": "com.obrc.hellovibes",
+      "buildNumber": "1.0.7",
+      "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -33,6 +35,9 @@
       "eas": {
         "projectId": "213ccd0b-1535-4402-9dbe-c386562074a3"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
