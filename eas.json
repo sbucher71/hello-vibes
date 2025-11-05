@@ -19,8 +19,7 @@
     },
     "production": {
       "ios": { 
-        "simulator": false,
-        "bundler": "metro"
+        "simulator": false
       }
     }
   },
