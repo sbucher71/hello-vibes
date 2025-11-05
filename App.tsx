@@ -12,8 +12,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
 
-const { width, height } = Dimensions.get('window');
-
 export default function App() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const bounceAnim = useRef(new Animated.Value(1)).current;
@@ -82,6 +80,7 @@ export default function App() {
 
   // Use View with CSS gradient for web, LinearGradient for native
   if (Platform.OS === 'web') {
+    const { width, height } = Dimensions.get('window');
     return (
       <View style={{
         flex: 1,
@@ -147,6 +146,7 @@ export default function App() {
     );
   }
 
+  const { width, height } = Dimensions.get('window');
   return (
     <LinearGradient
       colors={['#14b8a6', '#a855f7']}
