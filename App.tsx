@@ -12,6 +12,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
 
+const { width, height } = Dimensions.get('window');
+
 export default function App() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const bounceAnim = useRef(new Animated.Value(1)).current;
@@ -20,7 +22,6 @@ export default function App() {
   const emojiAnims = useRef([...Array(8)].map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
-    console.log('App is mounting! Platform:', Platform.OS);
     // Set greeting based on time of day
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Good morning');
@@ -96,14 +97,16 @@ export default function App() {
             {emojiAnims.map((anim, i) => {
               const angle = (i / emojiAnims.length) * Math.PI * 2;
               const distance = 150;
+              const centerX = width / 2;
+              const centerY = height / 2;
               return (
                 <Animated.Text
                   key={i}
                   style={{
                     position: 'absolute',
                     fontSize: 40,
-                    top: '50%',
-                    left: '50%',
+                    top: centerY - 20,
+                    left: centerX - 20,
                     opacity: anim.interpolate({
                       inputRange: [0, 0.5, 1],
                       outputRange: [0, 1, 0],
@@ -156,14 +159,16 @@ export default function App() {
           {emojiAnims.map((anim, i) => {
             const angle = (i / emojiAnims.length) * Math.PI * 2;
             const distance = 150;
+            const centerX = width / 2;
+            const centerY = height / 2;
             return (
               <Animated.Text
                 key={i}
                 style={{
                   position: 'absolute',
                   fontSize: 40,
-                  top: '50%',
-                  left: '50%',
+                  top: centerY - 20,
+                  left: centerX - 20,
                   opacity: anim.interpolate({
                     inputRange: [0, 0.5, 1],
                     outputRange: [0, 1, 0],
