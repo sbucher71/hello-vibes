@@ -10,7 +10,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 // Microsoft Azure AD configuration
 const MICROSOFT_CONFIG = {
-  clientId: 'YOUR_AZURE_AD_CLIENT_ID', // Replace with your Azure AD Application (client) ID
+  clientId: '194d3cab-45ff-4828-9bde-a7606418bda0', // Replace with your Azure AD Application (client) ID
   tenantId: 'common', // 'common', 'organizations', 'consumers', or your specific tenant ID
   scopes: ['openid', 'profile', 'email', 'User.Read'],
 };
@@ -125,6 +125,9 @@ export default function App() {
   };
 
   const handleMicrosoftLogin = async () => {
+    console.log('Microsoft Login - Client ID:', MICROSOFT_CONFIG.clientId);
+    console.log('Redirect URI:', redirectUri);
+    
     if (MICROSOFT_CONFIG.clientId === 'YOUR_AZURE_AD_CLIENT_ID') {
       Alert.alert(
         'Setup Required',
@@ -138,6 +141,8 @@ export default function App() {
       );
       return;
     }
+    
+    console.log('Starting OAuth flow...');
     promptAsync();
   };
 
