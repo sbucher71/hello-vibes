@@ -20,18 +20,29 @@ Add a **Public client/native (mobile & desktop)** redirect URI:
 hellovibes://auth
 ```
 
-## Step 3: Get Your Client ID
+## Step 3: Get Your Client ID and Tenant ID
 
 1. After registration, you'll see the **Overview** page
 2. Copy the **Application (client) ID** (looks like: `12345678-1234-1234-1234-123456789abc`)
-3. Open `App.tsx` and replace:
+3. Copy the **Directory (tenant) ID** (also on the Overview page, looks like: `87654321-4321-4321-4321-cba987654321`)
+4. Open `App.tsx` and replace both values:
    ```typescript
-   clientId: 'YOUR_AZURE_AD_CLIENT_ID',
+   const MICROSOFT_CONFIG = {
+     clientId: '12345678-1234-1234-1234-123456789abc', // Your Application (client) ID
+     tenantId: '87654321-4321-4321-4321-cba987654321', // Your Directory (tenant) ID
+     scopes: ['openid', 'profile', 'email', 'User.Read'],
+   };
    ```
-   with:
-   ```typescript
-   clientId: '12345678-1234-1234-1234-123456789abc',
-   ```
+
+### Understanding Tenant Configuration
+
+Since you want **only users in your organization** to sign in:
+- ✅ **Use your specific tenant ID** (the GUID from Azure AD Overview)
+- ❌ **Don't use** `'common'` (allows any Microsoft account)
+- ❌ **Don't use** `'organizations'` (allows any work/school account)
+- ❌ **Don't use** `'consumers'` (allows personal Microsoft accounts)
+
+**Your specific tenant ID ensures only users in your Azure AD tenant can authenticate.**
 
 ## Step 4: Configure API Permissions
 
@@ -126,17 +137,18 @@ You can add both in Azure AD - it will accept whichever one matches your current
 5. Grant permissions
 6. You'll be redirected back to the app with your profile info
 
-## Tenant Configuration
+## Tenant Configuration (Already Configured for Your Organization)
 
-The default configuration uses `common` tenant:
-```typescript
-tenantId: 'common', // Supports all Microsoft accounts
-```
+Your app is now configured to use your specific tenant ID, which means:
+- ✅ Only users in **your organization** can sign in
+- ✅ Personal Microsoft accounts are blocked
+- ✅ Other organizations' accounts are blocked
 
-You can change this to:
-- `'organizations'` - Only work/school accounts
-- `'consumers'` - Only personal Microsoft accounts  
-- `'your-tenant-id'` - Specific Azure AD tenant only
+If you want to change this later:
+- `'your-tenant-id'` - Only your specific Azure AD tenant (current configuration)
+- `'organizations'` - Any work/school account from any organization
+- `'consumers'` - Only personal Microsoft accounts
+- `'common'` - All Microsoft accounts (requires multi-tenant app configuration)
 
 ## Troubleshooting
 
