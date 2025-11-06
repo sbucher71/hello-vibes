@@ -61,7 +61,61 @@ Your redirect URI in the app is:
 hellovibes://auth
 ```
 
-Make sure this matches exactly in Azure AD under **Authentication** > **Platform configurations** > **Mobile and desktop applications**
+### Detailed Configuration Steps:
+
+1. **In Azure Portal**, go back to your App registration
+2. Click **Authentication** in the left menu
+3. Under **Platform configurations**, you should see **Mobile and desktop applications**
+4. Click **Add a platform** if you haven't added it yet, or click **Configure** to edit
+5. In the **Custom redirect URIs** section, add:
+   ```
+   hellovibes://auth
+   ```
+6. **Important**: Make sure this redirect URI is added under the **Mobile and desktop applications** platform, NOT under Web
+7. Click **Save**
+
+### Verify Your Configuration:
+
+Go back to **Authentication** and confirm:
+- ✅ Platform: **Mobile and desktop applications** exists
+- ✅ Redirect URI: `hellovibes://auth` is listed
+- ✅ **Allow public client flows**: Toggle is set to **Yes** (scroll down to Advanced settings)
+
+### Understanding the Redirect URI:
+
+The redirect URI format is: `[scheme]://[path]`
+- **Scheme**: `hellovibes` (defined in your app.json)
+- **Path**: `auth` (defined in the makeRedirectUri call)
+
+When the OAuth flow completes, Microsoft will redirect to this URI, which will open your app and pass the authorization code.
+
+### Common Mistakes to Avoid:
+
+❌ **Don't** add it as a Web redirect URI  
+✅ **Do** add it as a Mobile and desktop applications redirect URI
+
+❌ **Don't** use `http://` or `https://` for mobile apps  
+✅ **Do** use your custom scheme: `hellovibes://`
+
+❌ **Don't** forget the path: `hellovibes://` alone won't work  
+✅ **Do** include the full path: `hellovibes://auth`
+
+### For Different Environments:
+
+If you're testing in development vs production, you might need multiple redirect URIs:
+
+**Development (Expo Go)**:
+```
+exp://192.168.1.xxx:8081/--/auth
+```
+(IP will vary based on your network)
+
+**Production (Standalone app)**:
+```
+hellovibes://auth
+```
+
+You can add both in Azure AD - it will accept whichever one matches your current environment.
 
 ## Step 7: Test the Integration
 
