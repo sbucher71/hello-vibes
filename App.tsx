@@ -146,14 +146,6 @@ export default function App() {
     promptAsync();
   };
 
-  const handleAppleLogin = async () => {
-    Alert.alert('Apple Login', 'Apple Sign In requires Apple Developer account setup. Coming soon!');
-  };
-
-  const handleGoogleLogin = async () => {
-    Alert.alert('Google Login', 'Google OAuth integration requires Firebase/Google Cloud setup. Coming soon!');
-  };
-
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('user');
@@ -187,14 +179,6 @@ export default function App() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.microsoftButton} onPress={handleMicrosoftLogin}>
             <Text style={styles.buttonText}>🪟 Sign in with Microsoft</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.appleButton} onPress={handleAppleLogin}>
-            <Text style={styles.buttonText}>🍎 Sign in with Apple</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-            <Text style={styles.buttonText}>🔍 Sign in with Google</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -235,20 +219,6 @@ const styles = StyleSheet.create({
   },
   microsoftButton: {
     backgroundColor: '#0078D4',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  appleButton: {
-    backgroundColor: '#000000',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  googleButton: {
-    backgroundColor: '#4285F4',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
