@@ -28,8 +28,8 @@ hellovibes://auth
 4. Open `App.tsx` and replace both values:
    ```typescript
    const MICROSOFT_CONFIG = {
-     clientId: '12345678-1234-1234-1234-123456789abc', // Your Application (client) ID
-     tenantId: '87654321-4321-4321-4321-cba987654321', // Your Directory (tenant) ID
+     clientId: '', // Your Application (client) ID
+     tenantId: '', // Your Directory (tenant) ID
      scopes: ['openid', 'profile', 'email', 'User.Read'],
    };
    ```

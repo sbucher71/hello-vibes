@@ -11,7 +11,7 @@ WebBrowser.maybeCompleteAuthSession();
 // Microsoft Azure AD configuration
 const MICROSOFT_CONFIG = {
   clientId: '194d3cab-45ff-4828-9bde-a7606418bda0', // Replace with your Azure AD Application (client) ID
-  tenantId: 'YOUR_TENANT_ID', // Replace with your organization's tenant ID (found in Azure AD overview)
+  tenantId: 'd92ffb5a-f94b-49fd-944d-913752d01d54', // Replace with your organization's tenant ID (found in Azure AD overview)
   scopes: ['openid', 'profile', 'email', 'User.Read'],
 };
 
